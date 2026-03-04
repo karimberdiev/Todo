@@ -29,17 +29,41 @@ builder.Services
     .AddScheme<AuthenticationSchemeOptions, BearerTokenAuthenticationHandler>("Bearer", _ => { });
 builder.Services.AddAuthorization();
 
+builder.Services.AddSingleton<AppDbContext>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddSingleton<ITokenStore, InMemoryTokenStore>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<Func<string, string>>(sp =>
+{
+    var tokenStore = sp.GetRequiredService<ITokenStore>();
+    return userId => tokenStore.CreateToken(userId);
+});
+
+builder.Services
+    .AddAuthentication("Bearer")
+    .AddScheme<AuthenticationSchemeOptions, BearerTokenAuthenticationHandler>("Bearer", _ => { });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Serve Swagger UI at application root so https://localhost:7089/ works directly.
+    options.RoutePrefix = string.Empty;
+});
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
