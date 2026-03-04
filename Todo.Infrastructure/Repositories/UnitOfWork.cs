@@ -1,12 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Todo.Domain.Interfaces;
+using Todo.Infrastructure.Data;
 
 namespace Todo.Infrastructure.Repositories
 {
-    class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
+        public ITaskRepository Tasks { get; }
+        public IUserRepository Users { get; }
+
+        public UnitOfWork(AppDbContext context)
+        {
+            Tasks = new TaskRepository(context);
+            Users = new UserRepository(context);
+        }
+
+        public Task SaveChangesAsync() => Task.CompletedTask;
+
+        public void Dispose()
+        {
+        }
     }
 }
