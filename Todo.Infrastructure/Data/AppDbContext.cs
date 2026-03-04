@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Todo.Domain.Entities;
 
 namespace Todo.Infrastructure.Data
 {
-    class AppDbContext
+    public class AppDbContext
     {
+        public List<User> Users { get; } = new();
+        public List<TaskItem> Tasks { get; } = new();
+
+        public int UserSequence { get; set; }
+        public int TaskSequence { get; set; }
     }
 }

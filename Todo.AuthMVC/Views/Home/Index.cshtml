@@ -1,8 +1,57 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model Todo.AuthMVC.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Todo";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h2>My Todo List</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Yangi task qo'shish</h5>
+        <form asp-action="Create" method="post">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input asp-for="CreateTodo.Title" class="form-control" placeholder="Title" />
+                </div>
+                <div class="col-md-4">
+                    <input asp-for="CreateTodo.Description" class="form-control" placeholder="Description" />
+                </div>
+                <div class="col-md-3">
+                    <input asp-for="CreateTodo.DueDate" type="date" class="form-control" />
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Description</td>
+                <td>@item.DueDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.Status</td>
+                <td>
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
